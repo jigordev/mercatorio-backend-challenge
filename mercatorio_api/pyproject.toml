@@ -1,0 +1,17 @@
+[project]
+name = "mercatorio-api"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "django>=5.2.1",
+    "django-celery-beat>=2.8.1",
+    "django-environ>=0.12.0",
+    "django-ninja>=1.4.1",
+    "httpx>=0.28.1",
+    "psycopg2-binary>=2.9.10",
+    "python-magic>=0.4.27",
+    "uuid6>=2024.7.10",
+    "uvicorn>=0.34.2",
+]
