@@ -165,7 +165,7 @@ Disponível em:
 }
 ```
 
-## Documentação OpenAPI
+## Documentação OpenAPI (DEBUG=True)
 Disponível em:
 `GET /api/openapi.json`
 
