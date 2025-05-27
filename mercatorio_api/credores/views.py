@@ -3,7 +3,7 @@ from typing import List
 from datetime import datetime
 from ninja.errors import HttpError
 from ninja import Router, Form, UploadedFile, File
-from .schemas import CredorSchema, PrecatorioSchema, CredorPrecatorioSchema
+from .schemas import CredorSchema, CredorPrecatorioSchema
 from documentos.schemas import DocumentoSchema
 from certidoes.schemas import CertidaoSchema
 from .models import Credor
@@ -85,7 +85,7 @@ def search_certidoes(request, credor_id: UUID):
     response = get_certidoes_api(credor.cpf_cnpj)
 
     if "error" in response:
-        return HttpError(400, "Erro ao buscar as certidões")
+        raise HttpError(400, "Erro ao buscar as certidões")
 
     certidoes_criadas = []
 
