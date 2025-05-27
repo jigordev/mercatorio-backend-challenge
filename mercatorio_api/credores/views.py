@@ -11,7 +11,7 @@ from documentos.models import Documento
 from certidoes.models import Certidao
 from precatorios.models import Precatorio
 from certidoes.services.certidoes_api import get_certidoes_api
-from core.utils import validate_uploaded_file
+from core.utils import validate_uploaded_file, get_file_from_base64
 
 router = Router()
 
@@ -30,6 +30,9 @@ def get_credor_by_id(request, credor_id: UUID):
 def create_credor(request, data: CredorPrecatorioSchema):
     credor_data = data.dict(exclude={"precatorio"})
     precatorio_data = data.precatorio.dict()
+
+    if Credor.objects.filter(cpf_cnpj=credor_data["cpf_cnpj"]).exists():
+        raise HttpError(409, "Credor já cadastrado")
 
     credor = Credor.objects.create(**credor_data)
     Precatorio.objects.create(**precatorio_data, credor=credor)
@@ -95,7 +98,7 @@ def search_certidoes(request, credor_id: UUID):
             "tipo": certidao_data["tipo"],
             "status": certidao_data["status"],
             "origem": "api",
-            "conteudo_base64": certidao_data["conteudo_base64"],
+            "arquivo": get_file_from_base64(certidao_data["conteudo_base64"]),
             "recebida_em": datetime.utcnow(),
         }
 
