@@ -6,6 +6,8 @@ services:
     container_name: django-api
     env_file:
       - mercatorio_api/.env
+    environment:
+      - RUN_MIGRATIONS=1
     depends_on:
       - db
       - redis
