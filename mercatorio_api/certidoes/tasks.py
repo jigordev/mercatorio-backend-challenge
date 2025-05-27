@@ -3,7 +3,7 @@ from celery import shared_task
 from celery.utils.log import get_task_logger
 from .models import Certidao
 from credores.models import Credor
-from .services.certidao_api import get_certidoes_api
+from .services.certidoes_api import get_certidoes_api
 from core.utils import get_file_from_base64
 
 logger = get_task_logger(__name__)
