@@ -12,6 +12,7 @@ dependencies = [
     "httpx>=0.28.1",
     "psycopg2-binary>=2.9.10",
     "python-magic>=0.4.27",
+    "redis>=6.1.0",
     "uuid6>=2024.7.10",
     "uvicorn>=0.34.2",
 ]
