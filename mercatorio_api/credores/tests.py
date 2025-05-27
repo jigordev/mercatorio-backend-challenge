@@ -127,7 +127,7 @@ class CredoresTest(TestCase):
         result = response.json()
 
         self.assertEqual(response.status_code, 200)
-        self.assertIsInstance(result.get("certidoes"), list)
+        self.assertIsInstance(result, list)
 
     def test_get_credor(self):
         data = credor_data.copy()

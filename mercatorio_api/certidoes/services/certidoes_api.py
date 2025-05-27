@@ -16,4 +16,4 @@ def _make_request(
 
 
 def get_certidoes_api(cpf_cnpj: str):
-    return _make_request("GET", "/certidoes", params={"cpf_cnpj": cpf_cnpj})
+    return _make_request("GET", "certidoes", params={"cpf_cnpj": cpf_cnpj})

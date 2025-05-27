@@ -1,6 +1,7 @@
+import logging
 from uuid import UUID
 from typing import List
-from datetime import datetime
+from django.utils import timezone
 from ninja.errors import HttpError
 from ninja import Router, Form, UploadedFile, File
 from .schemas import CredorSchema, CredorPrecatorioSchema
@@ -11,7 +12,9 @@ from documentos.models import Documento
 from certidoes.models import Certidao
 from precatorios.models import Precatorio
 from certidoes.services.certidoes_api import get_certidoes_api
-from core.utils import validate_uploaded_file
+from core.utils import validate_uploaded_file, get_file_from_base64
+
+logger = logging.getLogger(__name__)
 
 router = Router()
 
@@ -30,6 +33,9 @@ def get_credor_by_id(request, credor_id: UUID):
 def create_credor(request, data: CredorPrecatorioSchema):
     credor_data = data.dict(exclude={"precatorio"})
     precatorio_data = data.precatorio.dict()
+
+    if Credor.objects.filter(cpf_cnpj=credor_data["cpf_cnpj"]).exists():
+        raise HttpError(409, "Credor já cadastrado")
 
     credor = Credor.objects.create(**credor_data)
     Precatorio.objects.create(**precatorio_data, credor=credor)
@@ -90,18 +96,29 @@ def search_certidoes(request, credor_id: UUID):
     certidoes_criadas = []
 
     for certidao_data in response["certidoes"]:
-        certidao_values = {
-            "credor_id": credor.id,
-            "tipo": certidao_data["tipo"],
-            "status": certidao_data["status"],
-            "origem": "api",
-            "conteudo_base64": certidao_data["conteudo_base64"],
-            "recebida_em": datetime.utcnow(),
-        }
+        try:
+            certidao_values = {
+                "credor_id": credor.id,
+                "tipo": certidao_data["tipo"],
+                "status": certidao_data["status"],
+                "origem": "api",
+                "arquivo": get_file_from_base64(certidao_data["conteudo_base64"]),
+                "recebida_em": timezone.now(),
+            }
 
-        obj, created = Certidao.objects.update_or_create(
-            credor_id=credor.id, tipo=certidao_data["tipo"], defaults=certidao_values
-        )
-        certidoes_criadas.append(obj)
+            obj, created = Certidao.objects.update_or_create(
+                credor_id=credor.id,
+                tipo=certidao_data["tipo"],
+                defaults=certidao_values,
+            )
+
+            if not created and obj.status == certidao_data["status"]:
+                continue
+
+            certidoes_criadas.append(obj)
+        except Exception as e:
+            logger.exception(
+                f"Erro ao processar certidão {certidao_data.get("tipo")}: {e}"
+            )
 
     return certidoes_criadas
