@@ -191,7 +191,7 @@ Valores padrão: admin, admin@example.com, admin.
 
 ---
 
-## 🧪 Executar os testes
+## Executar os testes
 
 ```bash
 sudo docker exec -it django-api uv run manage.py test credores.tests
