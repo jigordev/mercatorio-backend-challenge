@@ -66,11 +66,21 @@ DATABASE_URL=postgres://mercatorio:abcABC123@db:5432/mercatoriodb
 REDIS_URL=redis://redis:6379/0
 
 DEBUG=True
+
 SECRET_KEY="..."
+
 ALLOWED_HOSTS="localhost,127.0.0.1,[::1]"
+
 MAX_UPLOAD_SIZE=2
 ALLOWED_UPLOAD_CONTENT_TYPE="application/pdf,image/jpg,image/jpeg,image/png"
+
 MOCK_API_URL="http://fastapi:8000/api-mock"
+
+CORS_ALLOW_ALL_ORIGINS=True
+
+DJANGO_SUPERUSER_USERNAME=admin
+DJANGO_SUPERUSER_EMAIL=admin@example.com
+DJANGO_SUPERUSER_PASSWORD=admin123
 
 CELERY_BROKER_URL="redis://redis:6379/0"
 CELERY_RESULT_BACKEND="redis://redis:6379/0"
@@ -80,62 +90,62 @@ CELERY_RESULT_BACKEND="redis://redis:6379/0"
 
 ## Endpoints Disponíveis
 
-### `POST /api/credores/`
+### `POST /api/credores`
 
 Cadastra um credor e seu precatório.
 
 #### Exemplo (HTTPie):
 
 ```bash
-http POST http://localhost/api/credores/ nome="Maria Silva" cpf_cnpj="12345678900" email="maria@example.com" telefone="11999999999" precatorio:='{"numero_precatorio":"0001234-56.2020.8.26.0050","valor_nominal":50000,"foro":"TJSP","data_publicacao":"2023-10-01"}'
+http POST http://localhost/api/credores nome="Maria Silva" cpf_cnpj="12345678900" email="maria@example.com" telefone="11999999999" precatorio:='{"numero_precatorio":"0001234-56.2020.8.26.0050","valor_nominal":50000,"foro":"TJSP","data_publicacao":"2023-10-01"}'
 ```
 
 ---
 
-### `POST /api/credores/{id}/documentos/`
+### `POST /api/credores/{id}/documentos`
 
 Upload de documentos pessoais.
 
 #### Exemplo:
 
 ```bash
-http -f POST http://localhost/api/credores/{id}/documentos/ tipo="identidade" file@documento.pdf
+http -f POST http://localhost/api/credores/{id}/documentos tipo="identidade" file@documento.pdf
 ```
 
 ---
 
-### `POST /api/credores/{id}/certidoes/`
+### `POST /api/credores/{id}/certidoes`
 
 Upload manual de certidões.
 
 #### Exemplo:
 
 ```bash
-http -f POST http://localhost/api/credores/{id}/certidoes/ tipo="federal" status="negativa" file@certidao.pdf
+http -f POST http://localhost/api/credores/{id}/certidoes tipo="federal" status="negativa" file@certidao.pdf
 ```
 
 ---
 
-### `POST /api/credores/{id}/buscar-certidoes/`
+### `POST /api/credores/{id}/buscar-certidoes`
 
 Busca automática de certidões via API mock.
 
 #### Exemplo:
 
 ```bash
-http POST http://localhost/api/credores/{id}/buscar-certidoes/
+http POST http://localhost/api/credores/{id}/buscar-certidoes
 ```
 
 ---
 
-### `GET /api/credores/{id}/`
+### `GET /api/credores/{id}`
 
 Consulta geral de um credor, incluindo documentos, precatórios e certidões.
 
 #### Exemplo:
 
 ```bash
-http GET http://localhost/api/credores/{id}/
+http GET http://localhost/api/credores/{id}
 ```
 
 ---
