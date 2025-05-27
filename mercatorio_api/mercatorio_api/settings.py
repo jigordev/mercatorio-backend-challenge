@@ -12,6 +12,8 @@ SECRET_KEY = env("SECRET_KEY")
 
 DEBUG = env.bool("DEBUG", default=False)
 
+APPEND_SLASH = False
+
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS")
 
 MAX_UPLOAD_SIZE = env("MAX_UPLOAD_SIZE")
@@ -19,10 +21,13 @@ ALLOWED_UPLOAD_CONTENT_TYPE = env.list("ALLOWED_UPLOAD_CONTENT_TYPE")
 
 MOCK_API_URL = env("MOCK_API_URL")
 
-DJANGO_SUPERUSER_USERNAME = env("DJANGO_SUPERUSER_USERNAME")
-DJANGO_SUPERUSER_EMAIL = env("DJANGO_SUPERUSER_EMAIL")
-DJANGO_SUPERUSER_PASSWORD = env("DJANGO_SUPERUSER_PASSWORD")
+DJANGO_SUPERUSER_USERNAME = env("DJANGO_SUPERUSER_USERNAME", default="admin")
+DJANGO_SUPERUSER_EMAIL = env("DJANGO_SUPERUSER_EMAIL", default="admin@example.com")
+DJANGO_SUPERUSER_PASSWORD = env("DJANGO_SUPERUSER_PASSWORD", default="admin")
 
+CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS", default=False)
+
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -38,9 +43,11 @@ INSTALLED_APPS = [
     "core",
     "ninja",
     "django_celery_beat",
+    "corsheaders",
 ]
 
 MIDDLEWARE = [
+    "mercatorio_api.middleware.AppendSlashNoRedirectMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -48,6 +55,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
 ]
 
 ROOT_URLCONF = "mercatorio_api.urls"
