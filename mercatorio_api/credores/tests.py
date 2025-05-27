@@ -34,6 +34,10 @@ class CredoresTest(TestCase):
         self.assertEqual(result.get("cpf_cnpj"), data.get("cpf_cnpj"))
         self.assertTrue(result.get("id") is not None)
 
+        response = client.post("/", json=data)
+
+        self.assertEqual(response.status_code, 409)
+
     def test_upload_documento(self):
         fake_file = SimpleUploadedFile(
             content_type="application/pdf",
