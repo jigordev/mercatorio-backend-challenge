@@ -59,6 +59,21 @@ class CredoresTest(TestCase):
         self.assertEqual(result.get("tipo"), "identidade")
         self.assertEqual(str(result.get("credor_id", "")), str(credor.id))
 
+        fake_file2 = SimpleUploadedFile(
+            content_type="plain/text",
+            content=b"Text fake document for test",
+            name="documento.txt",
+        )
+
+        response = client.post(
+            f"/{credor.id}/documentos",
+            FILES={"file": fake_file2},
+            data={"tipo": "identidade"},
+        )
+        result = response.json()
+
+        self.assertEqual(response.status_code, 400)
+
     def test_upload_certidao(self):
         fake_file = SimpleUploadedFile(
             content_type="application/pdf",
@@ -84,6 +99,21 @@ class CredoresTest(TestCase):
         self.assertEqual(result.get("tipo"), "federal")
         self.assertEqual(result.get("status"), "positiva")
         self.assertEqual(str(result.get("credor_id", "")), str(credor.id))
+
+        fake_file2 = SimpleUploadedFile(
+            content_type="plain/text",
+            content=b"Text fake certificate for test",
+            name="certificado.txt",
+        )
+
+        response = client.post(
+            f"/{credor.id}/certidoes",
+            FILES={"file": fake_file2},
+            data={"tipo": "federal", "status": "positiva"},
+        )
+        result = response.json()
+
+        self.assertEqual(response.status_code, 400)
 
     def test_get_api_certidoes(self):
         data = credor_data.copy()
