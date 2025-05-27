@@ -1,0 +1,94 @@
+services:
+  django:
+    build:
+      context: mercatorio_api
+      dockerfile: Dockerfile
+    container_name: django-api
+    env_file:
+      - mercatorio_api/.env
+    depends_on:
+      - db
+      - redis
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.django.rule=Host(`localhost`)"
+      - "traefik.http.routers.django.entrypoints=web"
+    networks:
+      - mercatorio-network
+
+  fastapi:
+    build:
+      context: mock_api
+      dockerfile: Dockerfile
+    container_name: fastapi-mock-api
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fastapi.rule=Host(`localhost`) && PathPrefix(`/api-mock`)"
+      - "traefik.http.routers.fastapi.entrypoints=web"
+    networks:
+      - mercatorio-network
+
+  celery:
+    build:
+      context: mercatorio_api
+    container_name: celery-worker
+    command: uv run celery -A mercatorio_api worker --loglevel=info
+    env_file:
+      - mercatorio_api/.env
+    depends_on:
+      - django
+      - redis
+      - db
+    networks:
+      - mercatorio-network
+
+  beat:
+    build:
+      context: mercatorio_api
+    container_name: celery-beat
+    command: uv run celery -A mercatorio_api beat --loglevel=info
+    env_file:
+      - mercatorio_api/.env
+    depends_on:
+      - django
+      - redis
+      - db
+    networks:
+      - mercatorio-network
+
+  db:
+    image: postgres:15
+    container_name: postgres-db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file: mercatorio_api/.env
+    networks:
+      - mercatorio-network
+
+  redis:
+    image: redis:7
+    container_name: redis-cache
+    networks:
+      - mercatorio-network
+
+  traefik:
+    image: traefik:v3.0
+    container_name: traefik-server
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - mercatorio-network
+
+volumes:
+  postgres_data:
+
+networks:
+  mercatorio-network:
+    driver: bridge
