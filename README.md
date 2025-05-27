@@ -171,6 +171,16 @@ Disponível em:
 
 ---
 
+## Django Admin:
+
+Para alterar as informações de acesso do admin django basta declarar as variáveis no .env:
+
+`DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL`, `DJANGO_SUPERUSER_PASSWORD`
+
+Valores padrão: admin, admin@example.com, admin.
+
+---
+
 ## 🧪 Executar os testes
 
 ```bash
