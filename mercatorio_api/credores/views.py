@@ -1,6 +1,6 @@
 from uuid import UUID
 from typing import List
-from datetime import datetime
+from django.utils import timezone
 from ninja.errors import HttpError
 from ninja import Router, Form, UploadedFile, File
 from .schemas import CredorSchema, CredorPrecatorioSchema
@@ -99,7 +99,7 @@ def search_certidoes(request, credor_id: UUID):
             "status": certidao_data["status"],
             "origem": "api",
             "arquivo": get_file_from_base64(certidao_data["conteudo_base64"]),
-            "recebida_em": datetime.utcnow(),
+            "recebida_em": timezone.now(),
         }
 
         obj, created = Certidao.objects.update_or_create(
