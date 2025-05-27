@@ -1,7 +1,7 @@
 import base64
 import magic
 import uuid
-from ninja.errors import HttpError, ValidationError
+from ninja.errors import HttpError
 from django.conf import settings
 from django.core.files.base import ContentFile
 
@@ -23,9 +23,3 @@ def validate_uploaded_file(file):
 
     if file.content_type not in settings.ALLOWED_UPLOAD_CONTENT_TYPE:
         raise HttpError(400, "Formato de arquivo inválido")
-
-
-def global_exception_handler(request, exc):
-    if isinstance(exc, HttpError) or isinstance(exc, ValidationError):
-        return exc.status_code, {"error": exc.message}
-    return 500, {"error": "Erro interno no servidor"}
