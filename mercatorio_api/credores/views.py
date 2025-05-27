@@ -2,6 +2,7 @@ import logging
 from uuid import UUID
 from typing import List
 from django.utils import timezone
+from django.db.models import Q
 from ninja.errors import HttpError
 from ninja import Router, Form, UploadedFile, File
 from .schemas import CredorSchema, CredorPrecatorioSchema
@@ -34,8 +35,15 @@ def create_credor(request, data: CredorPrecatorioSchema):
     credor_data = data.dict(exclude={"precatorio"})
     precatorio_data = data.precatorio.dict()
 
-    if Credor.objects.filter(cpf_cnpj=credor_data["cpf_cnpj"]).exists():
+    if Credor.objects.filter(
+        Q(cpf_cnpj=credor_data["cpf_cnpj"]) | Q(email=credor_data["email"])
+    ).exists():
         raise HttpError(409, "Credor já cadastrado")
+
+    if Precatorio.objects.filter(
+        numero_precatorio=precatorio_data["numero_precatorio"]
+    ).exists():
+        raise HttpError(409, "Precatório já cadastrado")
 
     credor = Credor.objects.create(**credor_data)
     Precatorio.objects.create(**precatorio_data, credor=credor)
